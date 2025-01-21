@@ -94,18 +94,17 @@ class ExchangeRateV6Client:
         return f"{self._EXCHANGE_RATE_API_V6_URL}/{self._api_key}"
 
     def _raise_exception_from_error_type(self, error_type: str):
-        match error_type:
-            case "unsupported-code":
-                raise UnsupportedCodeError(
-                    "One or both of the supplied codes are not supported"
-                )
-            case "invalid-key":
-                raise InvalidKeyError("The api key is not valid")
-            case "inactive-account":
-                raise InactiveAccountError("The account's email wasn't confirmed")
-            case "quota-reached":
-                raise QuotaReachedError(
-                    "Reached the number of requests allowed in the plan"
-                )
-            case _:
-                raise Exception(f"Unexpected error type: {error_type}")
+        if error_type == "unsupported-code":
+            raise UnsupportedCodeError(
+                "One or both of the supplied codes are not supported"
+            )
+        elif error_type == "invalid-key":
+            raise InvalidKeyError("The api key is not valid")
+        elif error_type == "inactive-account":
+            raise InactiveAccountError("The account's email wasn't confirmed")
+        elif error_type == "quota-reached":
+            raise QuotaReachedError(
+                "Reached the number of requests allowed in the plan"
+            )
+        else:
+            raise Exception(f"Unexpected error type: {error_type}")
