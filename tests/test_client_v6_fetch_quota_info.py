@@ -24,6 +24,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             "plan_quota": 30000,
             "requests_remaining": 25623,
             "refresh_day_of_month": 17,
+            "extra_attribute": "extra",  # Extra attribute that will be ignored
         }
 
         expected = APIQuotaStatus(
