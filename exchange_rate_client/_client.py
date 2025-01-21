@@ -41,7 +41,7 @@ class ExchangeRateV6Client:
                 else:
                     raise Exception("Unknown error ocurred")
 
-            obj = ExchangeRates.from_api_response(data)
+            obj = ExchangeRates(**data)
 
             return obj
         except requests.exceptions.Timeout:
@@ -79,7 +79,7 @@ class ExchangeRateV6Client:
                 else:
                     raise Exception("Unknown error ocurred")
 
-            obj = PairConversion.from_api_response(data)
+            obj = PairConversion(**data)
 
             return obj
         except requests.exceptions.Timeout:
@@ -100,7 +100,7 @@ class ExchangeRateV6Client:
                 else:
                     raise Exception("Unknown error ocurred")
 
-            obj = APIQuotaStatus.from_api_response(data)
+            obj = APIQuotaStatus(**data)
 
             return obj
         except requests.exceptions.Timeout:

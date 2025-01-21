@@ -60,7 +60,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         result = self.client.get_exchange_rates("USD")
 
-        self.assertDictEqual(result.to_dict(), expected.to_dict())
+        self.assertDictEqual(result.model_dump(), expected.model_dump())
 
     @patch("exchange_rate_client._client.requests.get")
     def test_exchange_rates_on_unsupported_code_raises_exception(self, mock_get: Mock):
