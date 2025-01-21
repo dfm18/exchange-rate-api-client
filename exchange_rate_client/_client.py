@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .commons import PairConversion, APIQuotaStatus
+from .commons import ExchangeRates, PairConversion, APIQuotaStatus
 
 from .exceptions import (
     UnsupportedCodeError,
@@ -22,6 +22,30 @@ class ExchangeRateV6Client:
         self._api_key = api_key
         self._supported_codes_cache = None
         self._cache_timestamp = 0
+
+    def get_exchange_rates(self, base_code: str) -> ExchangeRates:
+        if not self._is_supported_code(base_code):
+            raise UnsupportedCodeError(f"Base code {base_code} is not supported")
+
+        url = f"{self._build_api_key_url()}/latest/{base_code}"
+
+        try:
+            response = requests.get(url, timeout=10)
+
+            data = response.json()
+
+            if response.status_code != 200:
+                error_type = data.get("error-type")
+                if error_type:
+                    self._raise_exception_from_error_type(error_type)
+                else:
+                    raise Exception("Unknown error ocurred")
+
+            obj = ExchangeRates.from_api_response(data)
+
+            return obj
+        except requests.exceptions.Timeout:
+            raise Exception("The request to the Exchange Rate API timed out")
 
     def pair_conversion(
         self,
