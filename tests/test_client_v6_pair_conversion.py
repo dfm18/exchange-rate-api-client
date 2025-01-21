@@ -79,6 +79,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             "target_code": "USD",
             "conversion_rate": 1.0278,
             "conversion_result": 4.1112,
+            "extra_attribute": "extra",  # Extra attribute that will be ignored
         }
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]

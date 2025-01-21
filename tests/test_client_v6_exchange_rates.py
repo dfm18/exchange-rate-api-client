@@ -40,6 +40,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
                 "EGP": 15.7361,
                 "EUR": 0.9013,
             },
+            "extra_attribute": "extra",  # Extra attribute that will be ignored
         }
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
