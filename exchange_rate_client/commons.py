@@ -4,6 +4,22 @@ from dataclasses import dataclass, field
 
 
 @dataclass
+class ExchangeRates:
+    base_code: str = ""
+    conversion_rates: Dict[str, float] = field(default=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {"base_code": self.base_code, "conversion_rates": self.conversion_rates}
+
+    @staticmethod
+    def from_api_response(data: Mapping[str, Any]) -> "ExchangeRates":
+        return ExchangeRates(
+            base_code=data.get("base_code"),
+            conversion_rates=data.get("conversion_rates", {}),
+        )
+
+
+@dataclass
 class PairConversion:
     time_last_update_unix: Optional[int] = field(default=None)
     time_last_update_utc: Optional[str] = field(default=None)
