@@ -1,4 +1,4 @@
-from typing import Optional, Mapping, Any, Self, Dict
+from typing import Optional, Mapping, Any, Dict
 
 from dataclasses import dataclass, field
 
@@ -27,7 +27,7 @@ class PairConversion:
         }
 
     @staticmethod
-    def from_api_response(data: Mapping[str, Any]) -> Self:
+    def from_api_response(data: Mapping[str, Any]) -> "PairConversion":
         obj = PairConversion()
 
         obj.time_last_update_unix = data.get("time_last_update_unix")

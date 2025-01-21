@@ -1,3 +1,5 @@
+from typing import Optional
+
 from .commons import PairConversion
 
 from .exceptions import (
@@ -25,7 +27,7 @@ class ExchangeRateV6Client:
         self,
         base_code: str,
         target_code: str,
-        amount: float | None = None,
+        amount: Optional[float] = None,
     ) -> PairConversion:
         if not self._is_supported_code(base_code):
             raise UnsupportedCodeError(f"Base code {base_code} is not supported")
