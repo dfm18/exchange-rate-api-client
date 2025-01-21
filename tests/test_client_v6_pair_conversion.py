@@ -54,7 +54,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         result = self.client.pair_conversion("EUR", "USD")
 
-        self.assertEqual(result.to_dict(), expected.to_dict())
+        self.assertEqual(result.model_dump(), expected.model_dump())
 
         mock_get.assert_called_with(
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/EUR/USD", timeout=10
@@ -96,7 +96,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         result = self.client.pair_conversion("EUR", "USD", 4)
 
-        self.assertEqual(result.to_dict(), expected.to_dict())
+        self.assertEqual(result.model_dump(), expected.model_dump())
 
         mock_get.assert_called_with(
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/EUR/USD/4", timeout=10

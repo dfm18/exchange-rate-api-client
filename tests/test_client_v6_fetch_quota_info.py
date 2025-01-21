@@ -32,7 +32,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         result = self.client.fetch_quota_info()
 
-        self.assertEqual(result.to_dict(), expected.to_dict())
+        self.assertEqual(result.model_dump(), expected.model_dump())
 
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_quota_info_on_invalid_key_raises_exception(self, mock_get: Mock):
