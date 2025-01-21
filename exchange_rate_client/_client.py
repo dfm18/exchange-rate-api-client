@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .commons import PairConversion
+from .commons import PairConversion, APIQuotaStatus
 
 from .exceptions import (
     UnsupportedCodeError,
@@ -56,6 +56,27 @@ class ExchangeRateV6Client:
                     raise Exception("Unknown error ocurred")
 
             obj = PairConversion.from_api_response(data)
+
+            return obj
+        except requests.exceptions.Timeout:
+            raise Exception("The request to the Exchange Rate API timed out")
+
+    def fetch_quota_info(self) -> APIQuotaStatus:
+        url = f"{self._build_api_key_url()}/quota"
+
+        try:
+            response = requests.get(url, timeout=10)
+
+            data = response.json()
+
+            if response.status_code != 200:
+                error_type = data.get("error-type")
+                if error_type:
+                    self._raise_exception_from_error_type(error_type)
+                else:
+                    raise Exception("Unknown error ocurred")
+
+            obj = APIQuotaStatus.from_api_response(data)
 
             return obj
         except requests.exceptions.Timeout:

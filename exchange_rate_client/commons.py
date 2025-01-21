@@ -40,3 +40,25 @@ class PairConversion:
         obj.conversion_result = data.get("conversion_result")
 
         return obj
+
+
+@dataclass
+class APIQuotaStatus:
+    plan_quota: int = 0
+    requests_remaining: int = 0
+    refresh_day_of_month: int = 0
+
+    def to_dict(self) -> Dict[str, int]:
+        return {
+            "plan_quota": self.plan_quota,
+            "requests_remaining": self.requests_remaining,
+            "refresh_day_of_month": self.refresh_day_of_month,
+        }
+
+    @staticmethod
+    def from_api_response(data: Mapping[str, Any]) -> "APIQuotaStatus":
+        return APIQuotaStatus(
+            plan_quota=data.get("plan_quota", 0),
+            requests_remaining=data.get("requests_remaining", 0),
+            refresh_day_of_month=data.get("refresh_day_of_month", 0),
+        )
