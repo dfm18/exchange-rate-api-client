@@ -12,6 +12,7 @@ from exchange_rate_client.exceptions import (
     InactiveAccount,
     QuotaReached,
     NoDataAvailable,
+    PlanUpgradeRequired,
     MalformedRequest,
 )
 
@@ -263,6 +264,25 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(MalformedRequest):
+            self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
+
+    @patch("exchange_rate_client._client.requests.get")
+    def test_fetch_historical_data_on_plan_upgrade_required_in_data_response_raises_exception(
+        self, mock_get: Mock
+    ):
+        mock_supported_codes_response = MagicMock()
+        mock_supported_codes_response.status_code = 200
+        mock_supported_codes_response.json.return_value = {
+            "supported_codes": [["USD", "United States Dollar"]]
+        }
+
+        mock_response = MagicMock()
+        mock_response.status_code = 403
+        mock_response.json.return_value = {"error-type": "plan-upgrade-required"}
+
+        mock_get.side_effect = [mock_supported_codes_response, mock_response]
+
+        with self.assertRaises(PlanUpgradeRequired):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
