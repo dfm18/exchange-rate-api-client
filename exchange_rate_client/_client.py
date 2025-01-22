@@ -1,14 +1,14 @@
 from typing import Optional
 
-from .commons import ExchangeRates, PairConversion, HistoricalData, APIQuotaStatus
+from .commons import StandardResponse, PairConversion, HistoricalData, APIQuotaStatus
 
 from .exceptions import (
-    UnsupportedCodeError,
-    InvalidKeyError,
-    InactiveAccountError,
-    QuotaReachedError,
-    PlanUpgradeRequiredError,
-    NoDataAvailableError,
+    UnsupportedCode,
+    InvalidKey,
+    InactiveAccount,
+    QuotaReached,
+    PlanUpgradeRequired,
+    NoDataAvailable,
 )
 
 import requests
@@ -27,9 +27,9 @@ class ExchangeRateV6Client:
         self._supported_codes_cache = None
         self._cache_timestamp = 0
 
-    def get_exchange_rates(self, base_code: str) -> ExchangeRates:
+    def fetch_standard_response(self, base_code: str) -> StandardResponse:
         if not self._is_supported_code(base_code):
-            raise UnsupportedCodeError(f"Base code {base_code} is not supported")
+            raise UnsupportedCode(f"Base code {base_code} is not supported")
 
         url = f"{self._build_api_key_url()}/latest/{base_code}"
 
@@ -45,7 +45,7 @@ class ExchangeRateV6Client:
                 else:
                     raise Exception("Unknown error ocurred")
 
-            obj = ExchangeRates(**data)
+            obj = StandardResponse(**data)
 
             return obj
         except requests.exceptions.Timeout:
@@ -58,10 +58,10 @@ class ExchangeRateV6Client:
         amount: Optional[float] = None,
     ) -> PairConversion:
         if not self._is_supported_code(base_code):
-            raise UnsupportedCodeError(f"Base code {base_code} is not supported")
+            raise UnsupportedCode(f"Base code {base_code} is not supported")
 
         if not self._is_supported_code(target_code):
-            raise UnsupportedCodeError(f"Target code {target_code} is not supported")
+            raise UnsupportedCode(f"Target code {target_code} is not supported")
 
         if amount is not None and amount < 0:
             raise ValueError("Amount must be a greater than or equal to 0")
@@ -93,7 +93,7 @@ class ExchangeRateV6Client:
         self, base_code: str, date_obj: date, amount: float
     ) -> HistoricalData:
         if not self._is_supported_code(base_code):
-            raise UnsupportedCodeError(f"Base code {base_code} is not supported")
+            raise UnsupportedCode(f"Base code {base_code} is not supported")
 
         year, month, day = (date_obj.year, date_obj.month, date_obj.day)
 
@@ -109,7 +109,7 @@ class ExchangeRateV6Client:
                 if error_type:
                     #  Special case
                     if error_type == "no-data-available":
-                        raise NoDataAvailableError(
+                        raise NoDataAvailable(
                             "The database doesn't have any exchange rates for the specific date supplied"
                         )
                     else:
@@ -180,19 +180,19 @@ class ExchangeRateV6Client:
 
     def _raise_exception_from_error_type(self, error_type: str):
         if error_type == "unsupported-code":
-            raise UnsupportedCodeError(
+            raise UnsupportedCode(
                 "One or both of the supplied codes are not supported"
             )
         elif error_type == "invalid-key":
-            raise InvalidKeyError("The api key is not valid")
+            raise InvalidKey("The api key is not valid")
         elif error_type == "inactive-account":
-            raise InactiveAccountError("The account's email wasn't confirmed")
+            raise InactiveAccount("The account's email wasn't confirmed")
         elif error_type == "quota-reached":
-            raise QuotaReachedError(
+            raise QuotaReached(
                 "Reached the number of requests allowed in the plan"
             )
         elif error_type == "plan-upgrade-required":
-            raise PlanUpgradeRequiredError(
+            raise PlanUpgradeRequired(
                 "The account plan doesn't support this type of request"
             )
         else:

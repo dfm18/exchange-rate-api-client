@@ -7,9 +7,9 @@ from exchange_rate_client._client import ExchangeRateV6Client
 from exchange_rate_client.commons import APIQuotaStatus
 
 from exchange_rate_client.exceptions import (
-    InvalidKeyError,
-    InactiveAccountError,
-    QuotaReachedError,
+    InvalidKey,
+    InactiveAccount,
+    QuotaReached,
 )
 
 
@@ -40,7 +40,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.return_value.status_code = 403
         mock_get.return_value.json.return_value = {"error-type": "invalid-key"}
 
-        with self.assertRaises(InvalidKeyError):
+        with self.assertRaises(InvalidKey):
             self.client.fetch_quota_info()
 
     @patch("exchange_rate_client._client.requests.get")
@@ -50,7 +50,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.return_value.status_code = 403
         mock_get.return_value.json.return_value = {"error-type": "inactive-account"}
 
-        with self.assertRaises(InactiveAccountError):
+        with self.assertRaises(InactiveAccount):
             self.client.fetch_quota_info()
 
     @patch("exchange_rate_client._client.requests.get")
@@ -58,5 +58,5 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.return_value.status_code = 403
         mock_get.return_value.json.return_value = {"error-type": "quota-reached"}
 
-        with self.assertRaises(QuotaReachedError):
+        with self.assertRaises(QuotaReached):
             self.client.fetch_quota_info()

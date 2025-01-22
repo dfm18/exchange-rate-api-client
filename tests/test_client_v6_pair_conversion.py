@@ -7,10 +7,10 @@ from exchange_rate_client._client import ExchangeRateV6Client
 from exchange_rate_client.commons import PairConversion
 
 from exchange_rate_client.exceptions import (
-    UnsupportedCodeError,
-    InvalidKeyError,
-    InactiveAccountError,
-    QuotaReachedError,
+    UnsupportedCode,
+    InvalidKey,
+    InactiveAccount,
+    QuotaReached,
 )
 
 
@@ -115,18 +115,18 @@ class TestExchangeRateV6Client(unittest.TestCase):
         # The mock will only be called once and will be stored in the cache.
         mock_get.return_value = mock_supported_codes_response
 
-        with self.assertRaises(UnsupportedCodeError) as context:
+        with self.assertRaises(UnsupportedCode) as context:
             self.client.pair_conversion("COP", "EUR")
 
         self.assertIn("COP", str(context.exception))
 
-        with self.assertRaises(UnsupportedCodeError) as context:
+        with self.assertRaises(UnsupportedCode) as context:
             self.client.pair_conversion("EUR", "URU")
 
         self.assertIn("URU", str(context.exception))
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_pair_conversion_on_ex(self, mock_get: Mock):
+    def test_pair_conversion_exceptions_by_checking_supported_codes(self, mock_get: Mock):
         mock_unsupported_code_response = MagicMock()
         mock_unsupported_code_response.status_code = 400
         mock_unsupported_code_response.json.return_value = {
@@ -164,16 +164,16 @@ class TestExchangeRateV6Client(unittest.TestCase):
             mock_no_error_type_response,
         ]
 
-        with self.assertRaises(UnsupportedCodeError):
+        with self.assertRaises(UnsupportedCode):
             self.client.pair_conversion("EUR", "USD")
 
-        with self.assertRaises(InvalidKeyError):
+        with self.assertRaises(InvalidKey):
             self.client.pair_conversion("EUR", "USD")
 
-        with self.assertRaises(InactiveAccountError):
+        with self.assertRaises(InactiveAccount):
             self.client.pair_conversion("EUR", "USD")
 
-        with self.assertRaises(QuotaReachedError):
+        with self.assertRaises(QuotaReached):
             self.client.pair_conversion("EUR", "USD")
 
         with self.assertRaises(Exception):
@@ -198,7 +198,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             self.client.pair_conversion("USD", "EUR", -1)
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_pair_conversion_on_unsupported_code_in_conversion_request_raises_exception(
+    def test_pair_conversion_on_unsupported_code_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         """Tests when UnsupportedCodeException is raised in the conversion request"""
@@ -214,11 +214,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(UnsupportedCodeError):
+        with self.assertRaises(UnsupportedCode):
             self.client.pair_conversion("USD", "EUR")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_pair_conversion_on_invalid_key_in_conversion_request_raises_exception(
+    def test_pair_conversion_on_invalid_key_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -233,11 +233,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(InvalidKeyError):
+        with self.assertRaises(InvalidKey):
             self.client.pair_conversion("USD", "EUR")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_pair_conversion_on_inactive_account_in_conversion_request_raises_exception(
+    def test_pair_conversion_on_inactive_account_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -252,11 +252,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(InactiveAccountError):
+        with self.assertRaises(InactiveAccount):
             self.client.pair_conversion("USD", "EUR")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_pair_conversion_on_quota_reached_in_conversion_request_raises_exception(
+    def test_pair_conversion_on_quota_reached_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -271,11 +271,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(QuotaReachedError):
+        with self.assertRaises(QuotaReached):
             self.client.pair_conversion("USD", "EUR")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_pair_conversion_on_unknown_error_type_in_conversion_request_raises_exception(
+    def test_pair_conversion_on_unknown_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -294,7 +294,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             self.client.pair_conversion("USD", "EUR")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_pair_conversion_on_no_error_type_in_conversion_request_raises_exception(
+    def test_pair_conversion_on_no_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()

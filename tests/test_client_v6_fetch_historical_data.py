@@ -7,11 +7,11 @@ from exchange_rate_client._client import ExchangeRateV6Client
 from exchange_rate_client.commons import HistoricalData
 
 from exchange_rate_client.exceptions import (
-    UnsupportedCodeError,
-    InvalidKeyError,
-    InactiveAccountError,
-    QuotaReachedError,
-    NoDataAvailableError
+    UnsupportedCode,
+    InvalidKey,
+    InactiveAccount,
+    QuotaReached,
+    NoDataAvailable
 )
 
 from datetime import date
@@ -86,7 +86,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.return_value = mock_supported_codes_response
 
-        with self.assertRaises(UnsupportedCodeError):
+        with self.assertRaises(UnsupportedCode):
             self.client.fetch_historical_data("EUR", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
@@ -130,16 +130,16 @@ class TestExchangeRateV6Client(unittest.TestCase):
             mock_no_error_type_response,
         ]
 
-        with self.assertRaises(UnsupportedCodeError):
+        with self.assertRaises(UnsupportedCode):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
-        with self.assertRaises(InvalidKeyError):
+        with self.assertRaises(InvalidKey):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
-        with self.assertRaises(InactiveAccountError):
+        with self.assertRaises(InactiveAccount):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
-        with self.assertRaises(QuotaReachedError):
+        with self.assertRaises(QuotaReached):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
         with self.assertRaises(Exception):
@@ -151,7 +151,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         self.assertEqual(str(context.exception), "Unknown error ocurred")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_historical_data_on_no_data_available_in_fetch_historical_data_request_raises_exception(self, mock_get: Mock):
+    def test_fetch_historical_data_on_no_data_available_in_data_response_raises_exception(self, mock_get: Mock):
         mock_supported_codes_response = MagicMock()
         mock_supported_codes_response.status_code = 200
         mock_supported_codes_response.json.return_value = {
@@ -164,11 +164,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
         
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
         
-        with self.assertRaises(NoDataAvailableError):
+        with self.assertRaises(NoDataAvailable):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_historical_data_on_unsupported_code_in_fetch_historical_data_request_raises_exception(
+    def test_fetch_historical_data_on_unsupported_code_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -183,11 +183,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(UnsupportedCodeError):
+        with self.assertRaises(UnsupportedCode):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_historical_data_on_invalid_key_in_fetch_historical_data_request_raises_exception(
+    def test_fetch_historical_data_on_invalid_key_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -202,11 +202,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(InvalidKeyError):
+        with self.assertRaises(InvalidKey):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_historical_data_on_inactive_account_in_fetch_historical_data_request_raises_exception(
+    def test_fetch_historical_data_on_inactive_account_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -221,11 +221,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(InactiveAccountError):
+        with self.assertRaises(InactiveAccount):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_historical_data_on_quota_reached_in_fetch_historical_data_request_raises_exception(
+    def test_fetch_historical_data_on_quota_reached_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -240,11 +240,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(QuotaReachedError):
+        with self.assertRaises(QuotaReached):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_historical_data_on_unknown_in_historical_data_request_raises_exception(
+    def test_fetch_historical_data_on_unknown_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -265,7 +265,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         self.assertIn("Unexpected error type", str(context.exception))
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_historical_data_on_no_error_type_in_historical_data_request_raises_exception(
+    def test_fetch_historical_data_on_no_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()

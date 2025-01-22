@@ -1,6 +1,16 @@
-__all__ = ["PairConversion", "APIQuotaStatus", "Currency", "ExchangeRateV6Client"]
+__all__ = [
+    "StandardResponse",
+    "PairConversion",
+    "HistoricalData",
+    "APIQuotaStatus",
+    "Currency",
+    "ExchangeRateV6Client",
+    "exceptions",
+]
 
 
-from .commons import PairConversion, APIQuotaStatus
+from .commons import StandardResponse, PairConversion, HistoricalData, APIQuotaStatus
 
 from ._client import ExchangeRateV6Client
+
+from . import exceptions
