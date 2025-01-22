@@ -1,6 +1,8 @@
 __all__ = [
     "StandardResponse",
     "PairConversion",
+    "TargetData",
+    "EnrichedData",
     "HistoricalData",
     "APIQuotaStatus",
     "Currency",
@@ -9,7 +11,14 @@ __all__ = [
 ]
 
 
-from .commons import StandardResponse, PairConversion, HistoricalData, APIQuotaStatus
+from .commons import (
+    StandardResponse,
+    PairConversion,
+    TargetData,
+    EnrichedData,
+    HistoricalData,
+    APIQuotaStatus,
+)
 
 from ._client import ExchangeRateV6Client
 
