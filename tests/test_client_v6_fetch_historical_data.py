@@ -11,7 +11,8 @@ from exchange_rate_client.exceptions import (
     InvalidKey,
     InactiveAccount,
     QuotaReached,
-    NoDataAvailable
+    NoDataAvailable,
+    MalformedRequest,
 )
 
 from datetime import date
@@ -151,7 +152,9 @@ class TestExchangeRateV6Client(unittest.TestCase):
         self.assertEqual(str(context.exception), "Unknown error ocurred")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_historical_data_on_no_data_available_in_data_response_raises_exception(self, mock_get: Mock):
+    def test_fetch_historical_data_on_no_data_available_in_data_response_raises_exception(
+        self, mock_get: Mock
+    ):
         mock_supported_codes_response = MagicMock()
         mock_supported_codes_response.status_code = 200
         mock_supported_codes_response.json.return_value = {
@@ -161,9 +164,9 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 400
         mock_response.json.return_value = {"error-type": "no-data-available"}
-        
+
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
-        
+
         with self.assertRaises(NoDataAvailable):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
@@ -241,6 +244,25 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(QuotaReached):
+            self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
+
+    @patch("exchange_rate_client._client.requests.get")
+    def test_fetch_historical_data_on_malformed_request_in_data_response_raises_exception(
+        self, mock_get: Mock
+    ):
+        mock_supported_codes_response = MagicMock()
+        mock_supported_codes_response.status_code = 200
+        mock_supported_codes_response.json.return_value = {
+            "supported_codes": [["USD", "United States Dollar"]]
+        }
+
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.json.return_value = {"error-type": "malformed-request"}
+
+        mock_get.side_effect = [mock_supported_codes_response, mock_response]
+
+        with self.assertRaises(MalformedRequest):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")

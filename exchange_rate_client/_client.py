@@ -9,6 +9,7 @@ from .exceptions import (
     QuotaReached,
     PlanUpgradeRequired,
     NoDataAvailable,
+    MalformedRequest,
 )
 
 import requests
@@ -180,20 +181,20 @@ class ExchangeRateV6Client:
 
     def _raise_exception_from_error_type(self, error_type: str):
         if error_type == "unsupported-code":
-            raise UnsupportedCode(
-                "One or both of the supplied codes are not supported"
-            )
+            raise UnsupportedCode("One or both of the supplied codes are not supported")
         elif error_type == "invalid-key":
             raise InvalidKey("The api key is not valid")
         elif error_type == "inactive-account":
             raise InactiveAccount("The account's email wasn't confirmed")
         elif error_type == "quota-reached":
-            raise QuotaReached(
-                "Reached the number of requests allowed in the plan"
-            )
+            raise QuotaReached("Reached the number of requests allowed in the plan")
         elif error_type == "plan-upgrade-required":
             raise PlanUpgradeRequired(
                 "The account plan doesn't support this type of request"
+            )
+        elif error_type == "malformed-request":
+            raise MalformedRequest(
+                "Invalid request structure. May be an invalid API key or another request argument"
             )
         else:
             raise Exception(f"Unexpected error type: {error_type}")
