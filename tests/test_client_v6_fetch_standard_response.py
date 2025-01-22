@@ -182,6 +182,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(InvalidKey):
             self.client.fetch_standard_response("USD")
 
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
+            timeout=10,
+        )
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_standard_response_on_inactive_account_in_data_response_raises_exception(
         self, mock_get: Mock
@@ -200,6 +205,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(InactiveAccount):
             self.client.fetch_standard_response("USD")
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_standard_response_on_quota_reached_in_data_response_raises_exception(
@@ -220,6 +230,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(QuotaReached):
             self.client.fetch_standard_response("USD")
 
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
+            timeout=10,
+        )
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_standard_response_on_malformed_request_in_data_response_raises_exception(
         self, mock_get: Mock
@@ -238,6 +253,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(MalformedRequest):
             self.client.fetch_standard_response("USD")
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_standard_response_on_unknown_error_type_in_data_response_raises_exception(
@@ -260,6 +280,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         self.assertIn("Unexpected error type", str(context.exception))
 
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
+            timeout=10,
+        )
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_standard_response_on_no_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
@@ -280,3 +305,8 @@ class TestExchangeRateV6Client(unittest.TestCase):
             self.client.fetch_standard_response("USD")
 
         self.assertEqual(str(context.exception), "Unknown error ocurred")
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
+            timeout=10,
+        )
