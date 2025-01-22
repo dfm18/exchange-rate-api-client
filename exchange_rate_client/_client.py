@@ -1,17 +1,21 @@
 from typing import Optional
 
-from .commons import ExchangeRates, PairConversion, APIQuotaStatus
+from .commons import ExchangeRates, PairConversion, HistoricalData, APIQuotaStatus
 
 from .exceptions import (
     UnsupportedCodeError,
     InvalidKeyError,
     InactiveAccountError,
     QuotaReachedError,
+    PlanUpgradeRequiredError,
+    NoDataAvailableError,
 )
 
 import requests
 
 import time
+
+from datetime import date
 
 
 class ExchangeRateV6Client:
@@ -85,6 +89,40 @@ class ExchangeRateV6Client:
         except requests.exceptions.Timeout:
             raise Exception("The request to the Exchange Rate API timed out")
 
+    def fetch_historical_data(
+        self, base_code: str, date_obj: date, amount: float
+    ) -> HistoricalData:
+        if not self._is_supported_code(base_code):
+            raise UnsupportedCodeError(f"Base code {base_code} is not supported")
+
+        year, month, day = (date_obj.year, date_obj.month, date_obj.day)
+
+        url = f"{self._build_api_key_url()}/history/{base_code}/{year}/{month}/{day}/{amount}"
+
+        try:
+            response = requests.get(url, timeout=10)
+
+            data = response.json()
+
+            if response.status_code != 200:
+                error_type = data.get("error-type")
+                if error_type:
+                    #  Special case
+                    if error_type == "no-data-available":
+                        raise NoDataAvailableError(
+                            "The database doesn't have any exchange rates for the specific date supplied"
+                        )
+                    else:
+                        self._raise_exception_from_error_type(error_type)
+                else:
+                    raise Exception("Unknown error ocurred")
+
+            obj = HistoricalData(**data)
+
+            return obj
+        except requests.exceptions.Timeout:
+            raise Exception("The request to the Exchange Rate API timed out")
+
     def fetch_quota_info(self) -> APIQuotaStatus:
         url = f"{self._build_api_key_url()}/quota"
 
@@ -152,6 +190,10 @@ class ExchangeRateV6Client:
         elif error_type == "quota-reached":
             raise QuotaReachedError(
                 "Reached the number of requests allowed in the plan"
+            )
+        elif error_type == "plan-upgrade-required":
+            raise PlanUpgradeRequiredError(
+                "The account plan doesn't support this type of request"
             )
         else:
             raise Exception(f"Unexpected error type: {error_type}")

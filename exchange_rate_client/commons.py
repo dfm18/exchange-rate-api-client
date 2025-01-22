@@ -23,6 +23,15 @@ class PairConversion(BaseResponseModel):
     conversion_result: Optional[float] = None
 
 
+class HistoricalData(BaseResponseModel):
+    year: int
+    month: int
+    day: int
+    base_code: str
+    requested_amount: int
+    conversion_amounts: Dict[str, float]
+
+
 class APIQuotaStatus(BaseResponseModel):
     plan_quota: int
     requests_remaining: int

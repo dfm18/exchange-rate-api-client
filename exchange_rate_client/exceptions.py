@@ -12,3 +12,11 @@ class InactiveAccountError(Exception):
 
 class QuotaReachedError(Exception):
     pass
+
+
+class PlanUpgradeRequiredError(Exception):
+    pass
+
+
+class NoDataAvailableError(Exception):
+    pass
