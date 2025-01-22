@@ -307,7 +307,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         }
 
         mock_response = MagicMock()
-        mock_response.status_code = 403
+        mock_response.status_code = 400
         mock_response.json.return_value = {"error-type": "unknown"}
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
