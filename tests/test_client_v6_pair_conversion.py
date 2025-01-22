@@ -11,6 +11,7 @@ from exchange_rate_client.exceptions import (
     InvalidKey,
     InactiveAccount,
     QuotaReached,
+    MalformedRequest,
 )
 
 
@@ -126,7 +127,9 @@ class TestExchangeRateV6Client(unittest.TestCase):
         self.assertIn("URU", str(context.exception))
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_pair_conversion_exceptions_by_checking_supported_codes(self, mock_get: Mock):
+    def test_pair_conversion_exceptions_by_checking_supported_codes(
+        self, mock_get: Mock
+    ):
         mock_unsupported_code_response = MagicMock()
         mock_unsupported_code_response.status_code = 400
         mock_unsupported_code_response.json.return_value = {
@@ -275,6 +278,25 @@ class TestExchangeRateV6Client(unittest.TestCase):
             self.client.pair_conversion("USD", "EUR")
 
     @patch("exchange_rate_client._client.requests.get")
+    def test_pair_conversion_on_malformed_request_in_data_response_raises_exception(
+        self, mock_get: Mock
+    ):
+        mock_supported_codes_response = MagicMock()
+        mock_supported_codes_response.status_code = 200
+        mock_supported_codes_response.json.return_value = {
+            "supported_codes": [["USD", "United States Dollar"], ["EUR", "Euro"]]
+        }
+
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.json.return_value = {"error-type": "malformed-request"}
+
+        mock_get.side_effect = [mock_supported_codes_response, mock_response]
+
+        with self.assertRaises(MalformedRequest):
+            self.client.pair_conversion("USD", "EUR")
+
+    @patch("exchange_rate_client._client.requests.get")
     def test_pair_conversion_on_unknown_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
@@ -285,7 +307,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         }
 
         mock_response = MagicMock()
-        mock_response.status_code = 403
+        mock_response.status_code = 400
         mock_response.json.return_value = {"error-type": "unknown"}
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]

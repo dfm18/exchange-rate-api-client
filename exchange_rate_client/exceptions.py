@@ -20,3 +20,7 @@ class PlanUpgradeRequired(Exception):
 
 class NoDataAvailable(Exception):
     pass
+
+
+class MalformedRequest(Exception):
+    pass

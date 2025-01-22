@@ -11,6 +11,7 @@ from exchange_rate_client.exceptions import (
     InvalidKey,
     InactiveAccount,
     QuotaReached,
+    MalformedRequest,
 )
 
 
@@ -220,6 +221,25 @@ class TestExchangeRateV6Client(unittest.TestCase):
             self.client.fetch_standard_response("USD")
 
     @patch("exchange_rate_client._client.requests.get")
+    def test_fetch_standard_response_on_malformed_request_in_data_response_raises_exception(
+        self, mock_get: Mock
+    ):
+        mock_supported_codes_response = MagicMock()
+        mock_supported_codes_response.status_code = 200
+        mock_supported_codes_response.json.return_value = {
+            "supported_codes": [["USD", "United States Dollar"]]
+        }
+
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.json.return_value = {"error-type": "malformed-request"}
+
+        mock_get.side_effect = [mock_supported_codes_response, mock_response]
+
+        with self.assertRaises(MalformedRequest):
+            self.client.fetch_standard_response("USD")
+
+    @patch("exchange_rate_client._client.requests.get")
     def test_fetch_standard_response_on_unknown_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
@@ -230,7 +250,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         }
 
         mock_response = MagicMock()
-        mock_response.status_code = 403
+        mock_response.status_code = 400
         mock_response.json.return_value = {"error-type": "unknown"}
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
