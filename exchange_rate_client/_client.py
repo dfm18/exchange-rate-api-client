@@ -1,6 +1,13 @@
 from typing import Optional
 
-from .commons import StandardResponse, PairConversion, HistoricalData, APIQuotaStatus
+from .commons import (
+    StandardResponse,
+    PairConversion,
+    TargetData,
+    EnrichedData,
+    HistoricalData,
+    APIQuotaStatus,
+)
 
 from .exceptions import (
     UnsupportedCode,
@@ -85,6 +92,39 @@ class ExchangeRateV6Client:
                     raise Exception("Unknown error ocurred")
 
             obj = PairConversion(**data)
+
+            return obj
+        except requests.exceptions.Timeout:
+            raise Exception("The request to the Exchange Rate API timed out")
+
+    def fetch_enriched_data(self, base_code: str, target_code: str) -> EnrichedData:
+        if not self._is_supported_code(base_code):
+            raise UnsupportedCode(f"Base code {base_code} is not supported")
+
+        if not self._is_supported_code(target_code):
+            raise UnsupportedCode(f"Target code {target_code} is not supported")
+
+        url = f"{self._build_api_key_url()}/enriched/{base_code}/{target_code}"
+
+        try:
+            response = requests.get(url, timeout=10)
+
+            data = response.json()
+
+            if response.status_code != 200:
+                error_type = data.get("error-type")
+                if error_type:
+                    self._raise_exception_from_error_type(error_type)
+                else:
+                    raise Exception("Unknown error ocurred")
+
+            target_data = TargetData(**data["target_data"])
+
+            data_without_target = {
+                key: value for key, value in data.items() if key != "target_data"
+            }
+
+            obj = EnrichedData(target_data=target_data, **data_without_target)
 
             return obj
         except requests.exceptions.Timeout:
