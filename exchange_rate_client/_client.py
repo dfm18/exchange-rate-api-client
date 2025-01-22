@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .commons import ExchangeRates, PairConversion, HistoricalData, APIQuotaStatus
+from .commons import StandardResponse, PairConversion, HistoricalData, APIQuotaStatus
 
 from .exceptions import (
     UnsupportedCodeError,
@@ -27,7 +27,7 @@ class ExchangeRateV6Client:
         self._supported_codes_cache = None
         self._cache_timestamp = 0
 
-    def get_exchange_rates(self, base_code: str) -> ExchangeRates:
+    def fetch_standard_response(self, base_code: str) -> StandardResponse:
         if not self._is_supported_code(base_code):
             raise UnsupportedCodeError(f"Base code {base_code} is not supported")
 
@@ -45,7 +45,7 @@ class ExchangeRateV6Client:
                 else:
                     raise Exception("Unknown error ocurred")
 
-            obj = ExchangeRates(**data)
+            obj = StandardResponse(**data)
 
             return obj
         except requests.exceptions.Timeout:
