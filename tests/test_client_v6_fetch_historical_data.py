@@ -7,11 +7,11 @@ from exchange_rate_client._client import ExchangeRateV6Client
 from exchange_rate_client.commons import HistoricalData
 
 from exchange_rate_client.exceptions import (
-    UnsupportedCodeError,
-    InvalidKeyError,
-    InactiveAccountError,
-    QuotaReachedError,
-    NoDataAvailableError
+    UnsupportedCode,
+    InvalidKey,
+    InactiveAccount,
+    QuotaReached,
+    NoDataAvailable
 )
 
 from datetime import date
@@ -86,7 +86,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.return_value = mock_supported_codes_response
 
-        with self.assertRaises(UnsupportedCodeError):
+        with self.assertRaises(UnsupportedCode):
             self.client.fetch_historical_data("EUR", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
@@ -130,16 +130,16 @@ class TestExchangeRateV6Client(unittest.TestCase):
             mock_no_error_type_response,
         ]
 
-        with self.assertRaises(UnsupportedCodeError):
+        with self.assertRaises(UnsupportedCode):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
-        with self.assertRaises(InvalidKeyError):
+        with self.assertRaises(InvalidKey):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
-        with self.assertRaises(InactiveAccountError):
+        with self.assertRaises(InactiveAccount):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
-        with self.assertRaises(QuotaReachedError):
+        with self.assertRaises(QuotaReached):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
         with self.assertRaises(Exception):
@@ -164,7 +164,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
         
-        with self.assertRaises(NoDataAvailableError):
+        with self.assertRaises(NoDataAvailable):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
@@ -183,7 +183,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(UnsupportedCodeError):
+        with self.assertRaises(UnsupportedCode):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
@@ -202,7 +202,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(InvalidKeyError):
+        with self.assertRaises(InvalidKey):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
@@ -221,7 +221,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(InactiveAccountError):
+        with self.assertRaises(InactiveAccount):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")
@@ -240,7 +240,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        with self.assertRaises(QuotaReachedError):
+        with self.assertRaises(QuotaReached):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
     @patch("exchange_rate_client._client.requests.get")

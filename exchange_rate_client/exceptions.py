@@ -1,22 +1,22 @@
-class UnsupportedCodeError(Exception):
+class UnsupportedCode(Exception):
     pass
 
 
-class InvalidKeyError(Exception):
+class InvalidKey(Exception):
     pass
 
 
-class InactiveAccountError(Exception):
+class InactiveAccount(Exception):
     pass
 
 
-class QuotaReachedError(Exception):
+class QuotaReached(Exception):
     pass
 
 
-class PlanUpgradeRequiredError(Exception):
+class PlanUpgradeRequired(Exception):
     pass
 
 
-class NoDataAvailableError(Exception):
+class NoDataAvailable(Exception):
     pass
