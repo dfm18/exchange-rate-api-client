@@ -12,6 +12,16 @@ class StandardResponse(BaseResponseModel):
     conversion_rates: Dict[str, float]
 
 
+class ExchangeRates(BaseResponseModel):
+    time_last_update_unix: int
+    time_last_update_utc: str
+    time_next_update_unix: int
+    time_next_update_utc: str
+    time_eol_unix: int
+    base_code: str
+    rates: Dict[str, float]
+
+
 class PairConversion(BaseResponseModel):
     time_last_update_unix: Optional[int] = None
     time_last_update_utc: Optional[str] = None
