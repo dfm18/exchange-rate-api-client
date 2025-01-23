@@ -8,6 +8,10 @@ class BaseResponseModel(BaseModel):
 
 
 class ExclusiveExchangeRates(BaseResponseModel):
+    time_last_update_unix: int
+    time_last_update_utc: str
+    time_next_update_unix: int
+    time_next_update_utc: str
     base_code: str
     conversion_rates: Dict[str, float]
 

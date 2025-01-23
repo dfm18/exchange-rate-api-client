@@ -30,6 +30,10 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
+            "time_last_update_unix": 1585267200,
+            "time_last_update_utc": "Fri, 27 Mar 2020 00:00:00 +0000",
+            "time_next_update_unix": 1585353700,
+            "time_next_update_utc": "Sat, 28 Mar 2020 00:00:00 +0000",
             "base_code": "USD",
             "conversion_rates": {
                 "USD": 1,
@@ -47,6 +51,10 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         expected = ExclusiveExchangeRates(
+            time_last_update_unix=1585267200,
+            time_last_update_utc="Fri, 27 Mar 2020 00:00:00 +0000",
+            time_next_update_unix=1585353700,
+            time_next_update_utc="Sat, 28 Mar 2020 00:00:00 +0000",
             base_code="USD",
             conversion_rates={
                 "USD": 1,
