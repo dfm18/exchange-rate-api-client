@@ -41,7 +41,7 @@ class TestResponseErrorHandlers(unittest.TestCase):
                 "plan-upgrade-required",
             ),
             (handle_malformed_request, MalformedRequest, "malformed-request"),
-            (handle_no_data(), NoDataAvailable, "no-data-available"),
+            (handle_no_data("No data available"), NoDataAvailable, "no-data-available"),
         ]
 
         for (

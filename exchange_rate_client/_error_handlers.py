@@ -76,15 +76,10 @@ def handle_malformed_request(error_type: str):
         )
 
 
-def handle_no_data(error_message: Optional[str] = None) -> ResponseErrorHandler:
+def handle_no_data(error_message: str) -> ResponseErrorHandler:
     @error_type_handler
     def handler(error_type: str):
         if error_type == "no-data-available":
-            if error_message:
-                raise NoDataAvailable(error_message)
-            else:
-                raise NoDataAvailable(
-                    "The database doesn't have any exchange rates for the specific date supplied"
-                )
+            raise NoDataAvailable(error_message)
 
     return handler

@@ -41,21 +41,21 @@ class ExchangeRateV6Client:
         self._cache_timestamp = 0
         self._response_error_handlers = {
             "latest": [
-                handle_unsupported_code(),
+                handle_unsupported_code("The base code is not supported"),
                 handle_malformed_request,
                 handle_invalid_key,
                 handle_inactive_account,
                 handle_quota_reached,
             ],
             "pair": [
-                handle_unsupported_code(),
+                handle_unsupported_code("One or both codes are not supported"),
                 handle_malformed_request,
                 handle_invalid_key,
                 handle_inactive_account,
                 handle_quota_reached,
             ],
             "enriched": [
-                handle_unsupported_code(),
+                handle_unsupported_code("One or both codes are not supported"),
                 handle_malformed_request,
                 handle_invalid_key,
                 handle_inactive_account,
@@ -63,8 +63,10 @@ class ExchangeRateV6Client:
                 handle_required_plan_upgrade,
             ],
             "historical": [
-                handle_no_data(),
-                handle_unsupported_code(),
+                handle_no_data(
+                    "The database doesn't have any exchange rates for the specific date supplied"
+                ),
+                handle_unsupported_code("The base code is not supported"),
                 handle_malformed_request,
                 handle_invalid_key,
                 handle_inactive_account,
