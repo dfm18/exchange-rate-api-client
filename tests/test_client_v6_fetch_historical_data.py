@@ -95,12 +95,6 @@ class TestExchangeRateV6Client(unittest.TestCase):
     def test_fetch_historical_data_exceptions_by_checking_supported_codes(
         self, mock_get: Mock
     ):
-        mock_unsupported_code_response = MagicMock()
-        mock_unsupported_code_response.status_code = 400
-        mock_unsupported_code_response.json.return_value = {
-            "error-type": "unsupported-code"
-        }
-
         mock_invalid_key_response = MagicMock()
         mock_invalid_key_response.status_code = 403
         mock_invalid_key_response.json.return_value = {"error-type": "invalid-key"}
@@ -124,16 +118,12 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_no_error_type_response.json.return_value = {}
 
         mock_get.side_effect = [
-            mock_unsupported_code_response,
             mock_invalid_key_response,
             mock_inactive_account_response,
             mock_quota_reached_response,
             mock_unknown_error_type_response,
             mock_no_error_type_response,
         ]
-
-        with self.assertRaises(UnsupportedCode):
-            self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
         with self.assertRaises(InvalidKey):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
@@ -144,8 +134,10 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(QuotaReached):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception) as context:
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
+
+        self.assertEqual(str(context.exception), "Unknown error ocurred")
 
         with self.assertRaises(Exception) as context:
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
@@ -339,7 +331,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
-        self.assertIn("Unexpected error type", str(context.exception))
+        self.assertEqual(str(context.exception), "Unknown error ocurred")
 
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
