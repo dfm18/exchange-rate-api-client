@@ -130,12 +130,6 @@ class TestExchangeRateV6Client(unittest.TestCase):
     def test_pair_conversion_exceptions_by_checking_supported_codes(
         self, mock_get: Mock
     ):
-        mock_unsupported_code_response = MagicMock()
-        mock_unsupported_code_response.status_code = 400
-        mock_unsupported_code_response.json.return_value = {
-            "error-type": "unsupported-code"
-        }
-
         mock_invalid_key_response = MagicMock()
         mock_invalid_key_response.status_code = 403
         mock_invalid_key_response.json.return_value = {"error-type": "invalid-key"}
@@ -159,16 +153,12 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_no_error_type_response.json.return_value = {}
 
         mock_get.side_effect = [
-            mock_unsupported_code_response,
             mock_invalid_key_response,
             mock_inactive_account_response,
             mock_quota_reached_response,
             mock_unknown_error_type_response,
             mock_no_error_type_response,
         ]
-
-        with self.assertRaises(UnsupportedCode):
-            self.client.pair_conversion("EUR", "USD")
 
         with self.assertRaises(InvalidKey):
             self.client.pair_conversion("EUR", "USD")
@@ -179,8 +169,10 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(QuotaReached):
             self.client.pair_conversion("EUR", "USD")
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception) as context:
             self.client.pair_conversion("EUR", "USD")
+
+        self.assertEqual(str(context.exception), "Unknown error ocurred")
 
         with self.assertRaises(Exception) as context:
             self.client.pair_conversion("EUR", "USD")
@@ -219,7 +211,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(UnsupportedCode):
             self.client.pair_conversion("USD", "EUR")
-        
+
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
             timeout=10,
@@ -243,7 +235,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(InvalidKey):
             self.client.pair_conversion("USD", "EUR")
-        
+
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
             timeout=10,
@@ -267,7 +259,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(InactiveAccount):
             self.client.pair_conversion("USD", "EUR")
-        
+
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
             timeout=10,
@@ -291,7 +283,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(QuotaReached):
             self.client.pair_conversion("USD", "EUR")
-        
+
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
             timeout=10,
@@ -315,7 +307,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(MalformedRequest):
             self.client.pair_conversion("USD", "EUR")
-        
+
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
             timeout=10,
@@ -339,7 +331,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(Exception):
             self.client.pair_conversion("USD", "EUR")
-        
+
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
             timeout=10,
