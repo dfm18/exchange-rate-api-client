@@ -184,7 +184,7 @@ class ExchangeRateV6Client:
         url = f"{self._build_api_key_url()}/{endpoint}"
         present_params = filter(lambda p: p is not None, params)
         if params:
-            url = f"{url}/{"/".join([str(param) for param in present_params])}"
+            url = f"{url}/{'/'.join([str(param) for param in present_params])}"
         return url
 
     def _make_request_and_get_data(
