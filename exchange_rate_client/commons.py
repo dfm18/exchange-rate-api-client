@@ -7,7 +7,7 @@ class BaseResponseModel(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
 
-class StandardResponse(BaseResponseModel):
+class ExclusiveExchangeRates(BaseResponseModel):
     base_code: str
     conversion_rates: Dict[str, float]
 

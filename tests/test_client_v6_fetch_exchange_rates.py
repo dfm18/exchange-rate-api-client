@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock, MagicMock
 
 from exchange_rate_client._client import ExchangeRateV6Client
 
-from exchange_rate_client.commons import StandardResponse
+from exchange_rate_client.commons import ExclusiveExchangeRates
 
 from exchange_rate_client.exceptions import (
     UnsupportedCode,
@@ -20,7 +20,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         self.client = ExchangeRateV6Client("mock-api-key")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response(self, mock_get: Mock):
+    def test_fetch_exchange_rates(self, mock_get: Mock):
         mock_supported_codes_response = MagicMock()
         mock_supported_codes_response.status_code = 200
         mock_supported_codes_response.json.return_value = {
@@ -46,7 +46,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
-        expected = StandardResponse(
+        expected = ExclusiveExchangeRates(
             base_code="USD",
             conversion_rates={
                 "USD": 1,
@@ -60,12 +60,12 @@ class TestExchangeRateV6Client(unittest.TestCase):
             },
         )
 
-        result = self.client.fetch_standard_response("USD")
+        result = self.client.fetch_exchange_rates("USD")
 
         self.assertDictEqual(result.model_dump(), expected.model_dump())
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_on_unsupported_code_raises_exception(
+    def test_fetch_exchange_rates_on_unsupported_code_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -77,10 +77,10 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.return_value = mock_supported_codes_response
 
         with self.assertRaises(UnsupportedCode):
-            self.client.fetch_standard_response("EUR")
+            self.client.fetch_exchange_rates("EUR")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_on_unsupported_code_in_data_response_raises_exception(
+    def test_fetch_exchange_rates_on_unsupported_code_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -96,14 +96,14 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(UnsupportedCode):
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD", timeout=10
         )
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_exceptions_by_checking_supported_codes(
+    def test_fetch_exchange_rates_exceptions_by_checking_supported_codes(
         self, mock_get: Mock
     ):
         mock_invalid_key_response = MagicMock()
@@ -137,26 +137,26 @@ class TestExchangeRateV6Client(unittest.TestCase):
         ]
 
         with self.assertRaises(InvalidKey):
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         with self.assertRaises(InactiveAccount):
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         with self.assertRaises(QuotaReached):
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         with self.assertRaises(Exception) as context:
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         self.assertEqual(str(context.exception), "Unknown error ocurred")
 
         with self.assertRaises(Exception) as context:
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         self.assertEqual(str(context.exception), "Unknown error ocurred")
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_on_invalid_key_in_data_response_raises_exception(
+    def test_fetch_exchange_rates_on_invalid_key_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -172,7 +172,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(InvalidKey):
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
@@ -180,7 +180,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         )
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_on_inactive_account_in_data_response_raises_exception(
+    def test_fetch_exchange_rates_on_inactive_account_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -196,7 +196,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(InactiveAccount):
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
@@ -204,7 +204,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         )
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_on_quota_reached_in_data_response_raises_exception(
+    def test_fetch_exchange_rates_on_quota_reached_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -220,7 +220,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(QuotaReached):
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
@@ -228,7 +228,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         )
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_on_malformed_request_in_data_response_raises_exception(
+    def test_fetch_exchange_rates_on_malformed_request_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -244,7 +244,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(MalformedRequest):
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         mock_get.assert_any_call(
             "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD",
@@ -252,7 +252,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         )
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_on_unknown_error_type_in_data_response_raises_exception(
+    def test_fetch_exchange_rates_on_unknown_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -268,7 +268,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(Exception) as context:
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         self.assertEqual(str(context.exception), "Unknown error ocurred")
 
@@ -278,7 +278,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         )
 
     @patch("exchange_rate_client._client.requests.get")
-    def test_fetch_standard_response_on_no_error_type_in_data_response_raises_exception(
+    def test_fetch_exchange_rates_on_no_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
         mock_supported_codes_response = MagicMock()
@@ -294,7 +294,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         mock_get.side_effect = [mock_supported_codes_response, mock_response]
 
         with self.assertRaises(Exception) as context:
-            self.client.fetch_standard_response("USD")
+            self.client.fetch_exchange_rates("USD")
 
         self.assertEqual(str(context.exception), "Unknown error ocurred")
 

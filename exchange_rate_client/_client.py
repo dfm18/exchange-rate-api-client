@@ -1,7 +1,7 @@
 from typing import Optional, List, Any
 
 from .commons import (
-    StandardResponse,
+    ExclusiveExchangeRates,
     PairConversion,
     TargetData,
     EnrichedData,
@@ -85,7 +85,7 @@ class ExchangeRateV6Client:
             ],
         }
 
-    def fetch_standard_response(self, base_code: str) -> StandardResponse:
+    def fetch_exchange_rates(self, base_code: str) -> ExclusiveExchangeRates:
         if not self._is_supported_code(base_code):
             raise UnsupportedCode(f"Base code {base_code} is not supported")
 
@@ -95,7 +95,7 @@ class ExchangeRateV6Client:
             url, self._response_error_handlers["latest"]
         )
 
-        obj = StandardResponse(**data)
+        obj = ExclusiveExchangeRates(**data)
 
         return obj
 
