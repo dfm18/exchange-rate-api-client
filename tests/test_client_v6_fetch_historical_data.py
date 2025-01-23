@@ -12,6 +12,7 @@ from exchange_rate_client.exceptions import (
     InactiveAccount,
     QuotaReached,
     NoDataAvailable,
+    PlanUpgradeRequired,
     MalformedRequest,
 )
 
@@ -170,6 +171,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(NoDataAvailable):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_historical_data_on_unsupported_code_in_data_response_raises_exception(
         self, mock_get: Mock
@@ -188,6 +194,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(UnsupportedCode):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_historical_data_on_invalid_key_in_data_response_raises_exception(
@@ -208,6 +219,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(InvalidKey):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_historical_data_on_inactive_account_in_data_response_raises_exception(
         self, mock_get: Mock
@@ -226,6 +242,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(InactiveAccount):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_historical_data_on_quota_reached_in_data_response_raises_exception(
@@ -246,6 +267,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(QuotaReached):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_historical_data_on_malformed_request_in_data_response_raises_exception(
         self, mock_get: Mock
@@ -264,6 +290,35 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(MalformedRequest):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )
+
+    @patch("exchange_rate_client._client.requests.get")
+    def test_fetch_historical_data_on_plan_upgrade_required_in_data_response_raises_exception(
+        self, mock_get: Mock
+    ):
+        mock_supported_codes_response = MagicMock()
+        mock_supported_codes_response.status_code = 200
+        mock_supported_codes_response.json.return_value = {
+            "supported_codes": [["USD", "United States Dollar"]]
+        }
+
+        mock_response = MagicMock()
+        mock_response.status_code = 403
+        mock_response.json.return_value = {"error-type": "plan-upgrade-required"}
+
+        mock_get.side_effect = [mock_supported_codes_response, mock_response]
+
+        with self.assertRaises(PlanUpgradeRequired):
+            self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_historical_data_on_unknown_in_data_response_raises_exception(
@@ -286,6 +341,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         self.assertIn("Unexpected error type", str(context.exception))
 
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_historical_data_on_no_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
@@ -306,3 +366,8 @@ class TestExchangeRateV6Client(unittest.TestCase):
             self.client.fetch_historical_data("USD", date(2015, 1, 1), 4.00)
 
         self.assertEqual(str(context.exception), "Unknown error ocurred")
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/history/USD/2015/1/1/4.0",
+            timeout=10,
+        )

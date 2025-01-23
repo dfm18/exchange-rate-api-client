@@ -219,6 +219,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(UnsupportedCode):
             self.client.pair_conversion("USD", "EUR")
+        
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_pair_conversion_on_invalid_key_in_data_response_raises_exception(
@@ -238,6 +243,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(InvalidKey):
             self.client.pair_conversion("USD", "EUR")
+        
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_pair_conversion_on_inactive_account_in_data_response_raises_exception(
@@ -257,6 +267,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(InactiveAccount):
             self.client.pair_conversion("USD", "EUR")
+        
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_pair_conversion_on_quota_reached_in_data_response_raises_exception(
@@ -276,6 +291,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(QuotaReached):
             self.client.pair_conversion("USD", "EUR")
+        
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_pair_conversion_on_malformed_request_in_data_response_raises_exception(
@@ -295,6 +315,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(MalformedRequest):
             self.client.pair_conversion("USD", "EUR")
+        
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_pair_conversion_on_unknown_error_type_in_data_response_raises_exception(
@@ -314,6 +339,11 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         with self.assertRaises(Exception):
             self.client.pair_conversion("USD", "EUR")
+        
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
+            timeout=10,
+        )
 
     @patch("exchange_rate_client._client.requests.get")
     def test_pair_conversion_on_no_error_type_in_data_response_raises_exception(
@@ -335,3 +365,8 @@ class TestExchangeRateV6Client(unittest.TestCase):
             self.client.pair_conversion("USD", "EUR")
 
         self.assertEqual(str(context.exception), "Unknown error ocurred")
+
+        mock_get.assert_any_call(
+            "https://v6.exchangerate-api.com/v6/mock-api-key/pair/USD/EUR",
+            timeout=10,
+        )
