@@ -76,6 +76,37 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         self.assertEqual(result.model_dump(), expected.model_dump())
 
+    def test_fetch_historical_data_on_invalid_arguments_raises_exception(self):
+        with self.assertRaises(ValueError) as context:
+            self.client.fetch_historical_data(10, date(2015, 1, 1), 100)
+
+        self.assertIn("base code", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.fetch_historical_data(None, date(2015, 1, 1), 100)
+
+        self.assertIn("base code", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.fetch_historical_data("USD", "non date instance", 100)
+
+        self.assertIn("date", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.fetch_historical_data("USD", None, 100)
+
+        self.assertIn("date", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.fetch_historical_data("USD", date(2015, 1, 1), "10")
+
+        self.assertIn("amount", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.fetch_historical_data("USD", date(2015, 1, 1), None)
+
+        self.assertIn("amount", str(context.exception).lower())
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_historical_data_on_unsupported_code_raises_exception(
         self, mock_get: Mock

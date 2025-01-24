@@ -105,6 +105,32 @@ class TestExchangeRateV6Client(unittest.TestCase):
             "https://v6.exchangerate-api.com/v6/mock-api-key/pair/EUR/USD/4", timeout=10
         )
 
+    def test_pair_conversion_on_invalid_arguments_raises_exception(self):
+        with self.assertRaises(ValueError) as context:
+            self.client.pair_conversion(10, "USD", 10)
+
+        self.assertIn("base code", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.pair_conversion(None, "USD", 10)
+
+        self.assertIn("base code", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.pair_conversion("USD", 10, 10)
+
+        self.assertIn("target code", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.pair_conversion("USD", None, 10)
+
+        self.assertIn("target code", str(context.exception).lower())
+
+        with self.assertRaises(ValueError) as context:
+            self.client.pair_conversion("USD", "EUR", "GBP")
+
+        self.assertIn("amount", str(context.exception).lower())
+
     @patch("exchange_rate_client._client.requests.get")
     def test_pair_conversion_on_unsupported_code_raises_exception(self, mock_get: Mock):
         mock_supported_codes_response = MagicMock()

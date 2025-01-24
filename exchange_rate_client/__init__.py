@@ -1,5 +1,5 @@
 __all__ = [
-    "StandardResponse",
+    "ExclusiveExchangeRates",
     "ExchangeRates",
     "PairConversion",
     "TargetData",
@@ -14,7 +14,7 @@ __all__ = [
 
 
 from .commons import (
-    StandardResponse,
+    ExclusiveExchangeRates,
     PairConversion,
     TargetData,
     EnrichedData,
