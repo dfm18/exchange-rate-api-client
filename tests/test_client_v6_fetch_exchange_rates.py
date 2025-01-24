@@ -72,6 +72,13 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         self.assertDictEqual(result.model_dump(), expected.model_dump())
 
+    def test_fetch_exchange_rates_on_invalid_arguments_raises_exception(self):
+        with self.assertRaises(ValueError):
+            self.client.fetch_exchange_rates(120)
+        
+        with self.assertRaises(ValueError):
+            self.client.fetch_exchange_rates(None)
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_exchange_rates_on_unsupported_code_raises_exception(
         self, mock_get: Mock

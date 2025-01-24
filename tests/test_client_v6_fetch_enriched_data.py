@@ -73,6 +73,19 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         self.assertEqual(expected.model_dump(), result.model_dump())
 
+    def test_fetch_enriched_data_on_invalid_arguments_raises_exception(self):
+        with self.assertRaises(ValueError):
+            self.client.fetch_enriched_data(10, "EUR")
+
+        with self.assertRaises(ValueError):
+            self.client.fetch_enriched_data(None, "EUR")
+
+        with self.assertRaises(ValueError):
+            self.client.fetch_enriched_data("USD", 10)
+
+        with self.assertRaises(ValueError):
+            self.client.fetch_enriched_data("USD", None)
+
     @patch("exchange_rate_client._client.requests.get")
     def test_fetch_enriched_data_on_unsupported_code_raises_exception(
         self, mock_get: Mock

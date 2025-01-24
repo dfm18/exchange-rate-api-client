@@ -100,6 +100,7 @@ class ExchangeRateV6Client:
                 - A dictionary of conversion rates to supported currencies.
 
         Raises:
+            ValueError: If one of the given arguments is invalid
             UnsupportedCode: If the provided base_code is not a supported currency code.
             MalformedRequest: If the request is malformed and cannot be processed by the API.
             InvalidKey: If the provided API key is invalid.
@@ -114,6 +115,9 @@ class ExchangeRateV6Client:
             print(exchange_rates.conversion_rates)  # Output: Dictionary of conversion rates for USD
             ```
         """
+        if not isinstance(base_code, str):
+            raise ValueError("Base code must be a str")
+
         if not self._is_supported_code(base_code):
             raise UnsupportedCode(f"Base code {base_code} is not supported")
 
@@ -142,10 +146,11 @@ class ExchangeRateV6Client:
             amount (Optional[float]): The amount to convert. If None, the conversion is done with a default value of 1.
 
         Returns:
-            PairConversion: Contains the base and target currency codes, conversion rate, 
+            PairConversion: Contains the base and target currency codes, conversion rate,
             and optionally the converted amount.
 
         Raises:
+            ValueError: If one of the given arguments is invalid
             UnsupportedCode: If the provided base_code or target_code is not a supported currency code.
             MalformedRequest: If the request is malformed and cannot be processed by the API.
             InvalidKey: If the provided API key is invalid.
@@ -162,6 +167,12 @@ class ExchangeRateV6Client:
             print(conversion.conversion_result)  # Output: 85.0 (depending on the exchange rate)
             ```
         """
+        if not isinstance(base_code, str) or not isinstance(target_code, str):
+            raise ValueError("Base code and target code must be a str")
+
+        if amount is not None and not isinstance(amount, (int, float)):
+            raise ValueError("Amount must be an integer or float")
+
         if not self._is_supported_code(base_code):
             raise UnsupportedCode(f"Base code {base_code} is not supported")
 
@@ -195,6 +206,7 @@ class ExchangeRateV6Client:
                 - Additional details about the target currency (e.g., name, symbol, flag, etc.).
 
         Raises:
+            ValueError: If one of the given arguments is invalid
             UnsupportedCode: If the provided base_code or target_code is not a supported currency code.
             MalformedRequest: If the request is malformed and cannot be processed by the API.
             InvalidKey: If the provided API key is invalid.
@@ -211,6 +223,9 @@ class ExchangeRateV6Client:
             print(enriched_data.conversion_rate)  # Output: Conversion rate between USD and EUR
             ```
         """
+        if not isinstance(base_code, str) or not isinstance(target_code, str):
+            raise ValueError("Base code and target code must be a str")
+
         if not self._is_supported_code(base_code):
             raise UnsupportedCode(f"Base code {base_code} is not supported")
 
@@ -245,10 +260,11 @@ class ExchangeRateV6Client:
             amount (float): The amount of the base currency to convert.
 
         Returns:
-            HistoricalData: Contains the historical exchange rate data for the requested date, 
+            HistoricalData: Contains the historical exchange rate data for the requested date,
             including conversion amounts for different currencies.
-            
+
         Raises:
+            ValueError: If one of the given arguments is invalid
             UnsupportedCode: If the base currency code is not supported.
             MalformedRequest: If the request structure does not follow the expected format.
             InvalidKey: If the API key provided is invalid.
@@ -257,6 +273,15 @@ class ExchangeRateV6Client:
             NoDataAvailable: If no exchange rates are available for the specific date provided.
             PlanUpgradeRequired: If the current plan does not support the requested data.
         """
+        if not isinstance(base_code, str):
+            raise ValueError("Base code must be a str")
+
+        if not isinstance(date_obj, date):
+            raise ValueError("Data must be a datetime.date instance")
+
+        if not isinstance(amount, (int, float)):
+            raise ValueError("Amount must be an integer or a float")
+
         if not self._is_supported_code(base_code):
             raise UnsupportedCode(f"Base code {base_code} is not supported")
 
@@ -277,7 +302,7 @@ class ExchangeRateV6Client:
         Fetch the API quota status to determine the number of requests remaining.
 
         Returns:
-            APIQuotaStatus: Contains information about the current API quota, such as the 
+            APIQuotaStatus: Contains information about the current API quota, such as the
             remaining requests and the reset time.
 
         Raises:
