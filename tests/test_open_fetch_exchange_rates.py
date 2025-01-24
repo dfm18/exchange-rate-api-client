@@ -2,15 +2,15 @@ import unittest
 
 from unittest.mock import patch, Mock
 
-from exchange_rate_client._open import fetch_exchange_rates
+from exchange_rate_api_client._open import fetch_exchange_rates
 
-from exchange_rate_client.commons import ExchangeRates
+from exchange_rate_api_client.commons import ExchangeRates
 
-from exchange_rate_client.exceptions import UnsupportedCode
+from exchange_rate_api_client.exceptions import UnsupportedCode
 
 
 class TestFetchExchangeRates(unittest.TestCase):
-    @patch("exchange_rate_client._open.requests.get")
+    @patch("exchange_rate_api_client._open.requests.get")
     def test_fetch_exchange_rates(self, mock_get: Mock):
         mock_get.return_value.json.return_value = {
             "time_last_update_unix": 1585872397,
@@ -73,7 +73,7 @@ class TestFetchExchangeRates(unittest.TestCase):
         with self.assertRaises(ValueError):
             fetch_exchange_rates(221323)  # Not str
 
-    @patch("exchange_rate_client._open.requests.get")
+    @patch("exchange_rate_api_client._open.requests.get")
     def test_on_unsupported_code_raises_exception(self, mock_get: Mock):
         mock_get.return_value.json.return_value = {"error-type": "unsupported-code"}
 

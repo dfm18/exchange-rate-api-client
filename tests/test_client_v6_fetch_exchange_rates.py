@@ -2,11 +2,11 @@ import unittest
 
 from unittest.mock import patch, Mock, MagicMock
 
-from exchange_rate_client._client import ExchangeRateV6Client
+from exchange_rate_api_client._client import ExchangeRateApiV6Client
 
-from exchange_rate_client.commons import ExclusiveExchangeRates
+from exchange_rate_api_client.commons import ExclusiveExchangeRates
 
-from exchange_rate_client.exceptions import (
+from exchange_rate_api_client.exceptions import (
     UnsupportedCode,
     InvalidKey,
     InactiveAccount,
@@ -17,9 +17,9 @@ from exchange_rate_client.exceptions import (
 
 class TestExchangeRateV6Client(unittest.TestCase):
     def setUp(self):
-        self.client = ExchangeRateV6Client("mock-api-key")
+        self.client = ExchangeRateApiV6Client("mock-api-key")
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates(self, mock_get: Mock):
         mock_supported_codes_response = MagicMock()
         mock_supported_codes_response.status_code = 200
@@ -79,7 +79,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.client.fetch_exchange_rates(None)
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_on_unsupported_code_raises_exception(
         self, mock_get: Mock
     ):
@@ -94,7 +94,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
         with self.assertRaises(UnsupportedCode):
             self.client.fetch_exchange_rates("EUR")
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_on_unsupported_code_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
@@ -117,7 +117,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             "https://v6.exchangerate-api.com/v6/mock-api-key/latest/USD", timeout=10
         )
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_exceptions_by_checking_supported_codes(
         self, mock_get: Mock
     ):
@@ -170,7 +170,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
 
         self.assertEqual(str(context.exception), "Unknown error ocurred")
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_on_invalid_key_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
@@ -194,7 +194,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             timeout=10,
         )
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_on_inactive_account_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
@@ -218,7 +218,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             timeout=10,
         )
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_on_quota_reached_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
@@ -242,7 +242,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             timeout=10,
         )
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_on_malformed_request_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
@@ -266,7 +266,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             timeout=10,
         )
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_on_unknown_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):
@@ -292,7 +292,7 @@ class TestExchangeRateV6Client(unittest.TestCase):
             timeout=10,
         )
 
-    @patch("exchange_rate_client._client.requests.get")
+    @patch("exchange_rate_api_client._client.requests.get")
     def test_fetch_exchange_rates_on_no_error_type_in_data_response_raises_exception(
         self, mock_get: Mock
     ):

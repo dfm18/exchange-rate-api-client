@@ -31,7 +31,7 @@ import time
 from datetime import date
 
 
-class ExchangeRateV6Client:
+class ExchangeRateApiV6Client:
     _EXCHANGE_RATE_API_V6_URL = "https://v6.exchangerate-api.com/v6"
     _CACHE_TIMEOUT = 3600
 

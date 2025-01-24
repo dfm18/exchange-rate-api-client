@@ -7,7 +7,7 @@ __all__ = [
     "HistoricalData",
     "APIQuotaStatus",
     "Currency",
-    "ExchangeRateV6Client",
+    "ExchangeRateApiV6Client",
     "exceptions",
     "fetch_exchange_rates",
 ]
@@ -22,7 +22,7 @@ from .commons import (
     APIQuotaStatus,
 )
 
-from ._client import ExchangeRateV6Client
+from ._client import ExchangeRateApiV6Client
 
 from . import exceptions
 

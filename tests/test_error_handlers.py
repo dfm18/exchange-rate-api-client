@@ -4,7 +4,7 @@ import unittest
 
 from unittest.mock import MagicMock
 
-from exchange_rate_client._error_handlers import (
+from exchange_rate_api_client._error_handlers import (
     ResponseErrorHandler,
     handle_unsupported_code,
     handle_invalid_key,
@@ -15,7 +15,7 @@ from exchange_rate_client._error_handlers import (
     handle_no_data,
 )
 
-from exchange_rate_client.exceptions import (
+from exchange_rate_api_client.exceptions import (
     UnsupportedCode,
     InvalidKey,
     InactiveAccount,
